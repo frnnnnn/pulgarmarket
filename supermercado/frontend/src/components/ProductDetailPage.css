@@ -1,0 +1,21 @@
+.product-detail {
+    font-family: Arial, sans-serif;
+  }
+  
+  .product-image img {
+    max-width: 300px;
+  }
+  
+  .product-info {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .add-to-cart-btn {
+    width: 100%;
+    max-width: 200px;
+    text-align: center;
+    font-size: 1rem;
+    font-weight: bold;
+  }
+  

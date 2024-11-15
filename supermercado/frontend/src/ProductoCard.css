@@ -1,0 +1,65 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+.producto-card {
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform 0.3s ease;
+    width: 250px;
+    margin: 10px;
+  }
+  
+  .producto-card:hover {
+    transition: transform 0.3s ease;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+
+  }
+  
+  .producto-imagen img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+  }
+  
+  .producto-info {
+    padding: 15px;
+    text-align: center;
+  }
+  
+  h3 {
+    font-size: 18px;
+    margin: 10px 0;
+  }
+  
+  .precio {
+    font-size: 20px;
+    color: #2ecc71;
+    margin: 5px 0;
+  }
+  
+  .agregar-carrito {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    width: 100%;
+  }
+  
+  .agregar-carrito:hover {
+    background-color: #c0392b;
+  }
+  
+  .sin-stock {
+    color: red;
+    font-size: 14px;
+    font-weight: bold;
+  }
+  

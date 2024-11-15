@@ -1,0 +1,38 @@
+.seleccionar-todos-btn {
+  background: none;
+  border: none;
+  color: #3b82f6; /* Color azul sutil */
+  cursor: pointer;
+  font-size: 0.9rem;
+  text-decoration: underline;
+  padding: 0;
+  margin-bottom: 8px;
+}
+
+.seleccionar-todos-btn:hover {
+  text-decoration: none;
+  color: #2563eb; /* Azul más oscuro al pasar el mouse */
+}
+
+.carrito-detalle-container {
+  max-width: 800px;
+  margin: auto;
+  padding: 20px;
+}
+
+.carrito-detalle-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+}
+
+.carrito-detalle-resumen {
+  border-top: 1px solid #ddd;
+  padding-top: 20px;
+}
+
+button[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

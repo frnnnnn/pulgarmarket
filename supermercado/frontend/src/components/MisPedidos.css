@@ -1,0 +1,22 @@
+.mis-pedidos {
+    padding: 20px;
+    background-color: #f9fafb;
+  }
+  
+  .pedido {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+  
+  .productos-list .producto-item {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .total {
+    font-size: 1.2em;
+    color: #2d3748;
+  }
+  
