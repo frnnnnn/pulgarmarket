@@ -17,7 +17,9 @@ import FailurePage from './components/FailurePage';
 import PendingPage from './components/PendingPage';
 import ProductDetailPage from './components/ProductDetailPage';
 import MisPedidos from './components/MisPedidos';
+import OrderDetails from "./components/OrderDetails";
 
+  
 function App() {
   const [productos, setProductos] = useState([]);
   const [carrito, setCarrito] = useState([]);
@@ -131,6 +133,9 @@ function App() {
           <Route path="/pending" element={<ProtectedRoute> <PendingPage /> </ProtectedRoute>} />
           <Route path="/:slug" element={<ProductDetailPage agregarAlCarrito={agregarAlCarrito} />} /> {/* Ruta dinámica para cada producto */}
           <Route path="/mis-pedidos" element={<ProtectedRoute><MisPedidos /></ProtectedRoute>} />
+          <Route path="/orders/:orderId" element={<OrderDetails />} />
+
+
         </Routes>
       </div>
     </Router>

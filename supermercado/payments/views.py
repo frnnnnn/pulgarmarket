@@ -15,8 +15,23 @@ sdk = mercadopago.SDK("APP_USR-6863379507941508-110923-93416db86f27794fe3c210742
 def create_payment(request):
     try:
         data = request.data
+        user = request.user
         items = data.get('items', [])
+        total = sum([item['quantity'] * item['price'] for item in items])
         
+        # Crear el pedido preliminar
+        order = Order.objects.create(user=user, total=total, status='pendiente')
+        
+        # Asociar productos al pedido
+        for item in items:
+            producto = Producto.objects.get(id=item['id'])  # Asegúrate de manejar Producto.DoesNotExist
+            OrderProduct.objects.create(
+                order=order,
+                product=producto,
+                quantity=item['quantity'],
+                price=item['price']
+            )
+
         preference_data = {
             "items": [
                 {
@@ -27,7 +42,7 @@ def create_payment(request):
                 } for item in items
             ],
             "back_urls": {
-                "success": "http://localhost:3000/success",
+                "success": f"http://localhost:3000/success?order_id={order.id}",  # Pasar el ID del pedido en la URL
                 "failure": "http://localhost:3000/failure",
                 "pending": "http://localhost:3000/pending"
             },
@@ -38,9 +53,13 @@ def create_payment(request):
         init_point = preference_response["response"]["init_point"]
         
         return JsonResponse({"init_point": init_point}, status=200)
-    
+
+    except Producto.DoesNotExist:
+        return JsonResponse({"error": "Producto no encontrado"}, status=404)
+
     except Exception as e:
-        return JsonResponse({"error": "Error al crear la preferencia de pago"}, status=500)
+        return JsonResponse({"error": f"Error al crear la preferencia de pago: {str(e)}"}, status=500)
+
     
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -49,41 +68,31 @@ from orders.models import Order, OrderProduct
 from productos.models import Producto
 import json
 
-@api_view(['POST'])
+@api_view(['GET'])  # Asegúrate de que sea GET
 @permission_classes([IsAuthenticated])
 def success_view(request):
     user = request.user
+    order_id = request.GET.get("order_id")  # Obtén el order_id de la URL
 
-    # Obtener el total y los items de la solicitud
-    total = request.data.get("total")
-    items = request.data.get("items", [])
-
-    if not items:
-        return JsonResponse({"error": "No se encontraron artículos en el pedido"}, status=400)
+    if not order_id:
+        return JsonResponse({"error": "ID del pedido no proporcionado"}, status=400)
 
     try:
-        # Crear el pedido
-        order = Order.objects.create(user=user, total=total, status="procesando")
+        # Busca el pedido creado previamente
+        order = Order.objects.get(id=order_id, user=user)
 
-        # Crear cada artículo del pedido
-        for item in items:
-            producto_id = item.get("producto_id")
-            cantidad = item.get("cantidad")
-            precio = item.get("precio")
+        # Actualiza el estado del pedido
+        order.status = "procesando"
+        order.save()
 
-            # Buscar el producto
-            producto = Producto.objects.get(id=producto_id)
+        return JsonResponse({"message": "¡Compra exitosa! Pedido actualizado.", "order_id": order.id}, status=200)
 
-            # Crear el OrderProduct
-            OrderProduct.objects.create(order=order, product=producto, quantity=cantidad, price=precio)
-
-        return JsonResponse({"message": "¡Compra exitosa! Pedido guardado."}, status=200)
-    
-    except Producto.DoesNotExist:
-        return JsonResponse({"error": "Producto no encontrado"}, status=404)
+    except Order.DoesNotExist:
+        return JsonResponse({"error": "Pedido no encontrado o no pertenece al usuario."}, status=404)
     
     except Exception as e:
-        return JsonResponse({"error": f"Error al guardar el pedido: {str(e)}"}, status=500)
+        return JsonResponse({"error": f"Error al confirmar el pedido: {str(e)}"}, status=500)
+
 
 
 

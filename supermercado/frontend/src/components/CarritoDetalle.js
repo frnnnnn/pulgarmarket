@@ -40,20 +40,31 @@ function CarritoDetalle({ carrito, actualizarCantidad, eliminarDelCarrito }) {
 
     setIsProcessing(true);
     setError(null);
+
     try {
       const items = carrito
         .filter(item => productosSeleccionados.includes(item.producto.id))
         .map(item => ({
-          title: item.producto.nombre,
-          quantity: item.cantidad,
-          price: item.producto.precio,
+          id: item.producto.id, // ID del producto
+          title: item.producto.nombre, // Nombre del producto
+          quantity: Number(item.cantidad), // Convertir a número
+          price: Number(item.producto.precio), // Convertir a número
         }));
 
+      const total = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
+
+      // Guarda los datos del pedido temporalmente en localStorage
+      localStorage.setItem(
+        "pedido",
+        JSON.stringify({ total, items })
+      );
+
+      // Enviar solicitud al backend
       const response = await fetch("http://127.0.0.1:8000/payments/create_payment/", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
           "Authorization": `Bearer ${localStorage.getItem("access")}`,
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ items }),
       });
@@ -61,8 +72,9 @@ function CarritoDetalle({ carrito, actualizarCantidad, eliminarDelCarrito }) {
       const data = await response.json();
 
       if (response.ok && data.init_point) {
-        window.location.href = data.init_point; // Redirige al usuario a MercadoPago
+        window.location.href = data.init_point; // Redirige a MercadoPago
       } else {
+        console.error("Respuesta del backend:", data);
         setError("Error al generar el enlace de pago.");
       }
     } catch (err) {
