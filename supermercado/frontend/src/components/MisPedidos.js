@@ -90,7 +90,7 @@ function MisPedidos() {
                   >
                     <div className="item-info flex items-center">
                       <img
-                        src={item.product.image_url}
+                        src={item.product.imagen_url}
                         alt={item.product.name}
                         className="w-12 h-12 object-cover rounded mr-3"
                       />

@@ -64,9 +64,14 @@ function SuccessPage() {
             ¡Compra exitosa!
           </h1>
           <p className="text-gray-700 text-lg">
-            Gracias por tu compra. Te hemos enviado un correo con los detalles
-            de tu pedido.
+            Gracias por tu compra. Este es tu código de retiro:
           </p>
+
+          {orderDetails?.pickup_code && (
+            <div className="pickup-code bg-blue-100 text-blue-800 font-bold text-2xl p-4 rounded-lg mt-6">
+              Código: {orderDetails.pickup_code}
+            </div>
+          )}
         </div>
 
         {orderDetails && orderDetails.items ? (
@@ -79,7 +84,7 @@ function SuccessPage() {
                   className="flex justify-between items-center border-b py-4"
                 >
                   <div>
-                    <h3 className="font-semibold text-lg">{item.product.name}</h3>
+                    <h3 className="font-semibold text-lg">{item.product.nombre}</h3>
                     <p className="text-gray-600">Cantidad: {item.quantity}</p>
                   </div>
                   <p className="text-gray-900 font-semibold">

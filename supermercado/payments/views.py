@@ -85,13 +85,36 @@ def success_view(request):
         order.status = "procesando"
         order.save()
 
-        return JsonResponse({"message": "¡Compra exitosa! Pedido actualizado.", "order_id": order.id}, status=200)
+        # Incluye los detalles del pedido en la respuesta
+        response_data = {
+            "message": "¡Compra exitosa! Pedido actualizado.",
+            "order_id": order.id,
+            "pickup_code": order.pickup_code,
+            "total": order.total,
+            "status": order.status,
+            "created_at": order.created_at,
+            "items": [
+                {
+                    "product": {
+                        "id": item.product.id,
+                        "nombre": item.product.nombre,
+                        "imagen": request.build_absolute_uri(item.product.imagen.url) if item.product.imagen else None
+                    },
+                    "quantity": item.quantity,
+                    "price": item.price
+                }
+                for item in order.items.all()
+            ]
+        }
+
+        return JsonResponse(response_data, status=200)
 
     except Order.DoesNotExist:
         return JsonResponse({"error": "Pedido no encontrado o no pertenece al usuario."}, status=404)
     
     except Exception as e:
         return JsonResponse({"error": f"Error al confirmar el pedido: {str(e)}"}, status=500)
+
 
 
 
