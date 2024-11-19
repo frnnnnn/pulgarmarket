@@ -50,14 +50,14 @@ def my_orders_view(request):
 @permission_classes([IsAuthenticated])
 def order_detail_view(request, order_id):
     try:
-        # Obtener el pedido por ID y verificar que pertenece al usuario autenticado
         order = Order.objects.get(id=order_id, user=request.user)
-        serializer = OrderSerializer(order)
+        serializer = OrderSerializer(order, context={'request': request})  # Incluye el contexto
         return Response(serializer.data)
     except Order.DoesNotExist:
         return Response({"error": "Pedido no encontrado o no pertenece al usuario."}, status=404)
     except Exception as e:
         return Response({"error": f"Hubo un problema al obtener el pedido: {str(e)}"}, status=500)
+
 
 
 

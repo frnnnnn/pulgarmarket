@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-//import "./OrderDetail.css";
+// import "./OrderDetail.css";
 
 function OrderDetail() {
   const { orderId } = useParams();
@@ -49,20 +49,23 @@ function OrderDetail() {
       {order ? (
         <div className="order-detail bg-white shadow-md rounded-lg p-6">
           <h1 className="text-2xl font-extrabold mb-6">Pedido #{order.id}</h1>
-          <p className="text-sm text-gray-600 mb-4">Estado: {order.status}</p>
-          <p className="text-lg font-semibold mb-6">Total: ${parseFloat(order.total).toFixed(2)}</p>
+          <p className="text-lg font-semibold mb-2">Estado: {order.status}</p>
+          <p className="text-lg font-semibold mb-2">Total: ${parseFloat(order.total).toFixed(2)}</p>
+          <div className="pickup-code bg-green-100 text-green-800 font-bold text-xl p-4 rounded-lg mb-6">
+            Código de Retiro: {order.pickup_code}
+          </div>
           <h2 className="text-xl font-semibold mb-4">Productos</h2>
           <ul className="order-items-list space-y-4">
             {order.items.map((item) => (
-              <li key={item.id} className="flex justify-between items-center">
+              <li key={item.product.id} className="flex justify-between items-center">
                 <div className="flex items-center">
                   <img
-                    src={item.product.image}
-                    alt={item.product.name}
+                    src={item.product.imagen_url}
+                    alt={item.product.nombre}
                     className="w-16 h-16 object-cover rounded mr-4"
                   />
                   <div>
-                    <p className="font-semibold">{item.product.name}</p>
+                    <p className="font-semibold">{item.product.nombre}</p>
                     <p className="text-sm text-gray-600">Cantidad: {item.quantity}</p>
                   </div>
                 </div>
