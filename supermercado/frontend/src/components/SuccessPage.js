@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "./SuccessPage.css";
 import checkedImage from "./images/checked.png";
+import CircularIndeterminate from "./CircularIndeterminate";
 
 function SuccessPage() {
   const navigate = useNavigate();
@@ -37,6 +38,7 @@ function SuccessPage() {
           const data = await response.json();
           setOrderDetails(data); // Guardar los detalles de la orden confirmada
           localStorage.removeItem("pedido"); // Limpiar datos del pedido almacenado
+          localStorage.removeItem("carrito"); // Limpiar el carrito de localStorage
         } else {
           const errorData = await response.json();
           console.error("Error al confirmar el pedido:", errorData);
@@ -88,18 +90,18 @@ function SuccessPage() {
                     <p className="text-gray-600">Cantidad: {item.quantity}</p>
                   </div>
                   <p className="text-gray-900 font-semibold">
-                    ${(item.quantity * item.price).toFixed(2)}
+                    ${(item.quantity * item.price)}
                   </p>
                 </li>
               ))}
             </ul>
             <div className="mt-6 text-right text-xl font-bold">
-              <p>Total: ${orderDetails.total}</p>
+              <p>Total: ${(orderDetails.total)}</p>
             </div>
           </div>
         ) : (
           <p className="text-red-500 mt-4">
-            {error || "Cargando detalles del pedido..."}
+            {error || <CircularIndeterminate />}
           </p>
         )}
 
@@ -111,7 +113,7 @@ function SuccessPage() {
             Seguir comprando
           </button>
           <button
-            onClick={() => navigate("/perfil")}
+            onClick={() => navigate("/mis-pedidos")}
             className="w-full lg:w-auto bg-gray-700 text-white py-3 px-6 rounded-lg font-semibold hover:bg-gray-800 transition"
           >
             Ver mis pedidos

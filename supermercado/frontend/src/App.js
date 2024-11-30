@@ -4,7 +4,7 @@ import ProductoCard from './ProductoCard';
 import Header from './Header';
 import './ProductoCard.css';
 import ProtectedRoute from './components/ProtectedRoute';  // Importa el Protected Route
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate, useNavigate } from 'react-router-dom';
 import Login from './components/LoginModal';
 import Register from './components/RegisterModal';
 import { isAuthenticated } from './utils/auth';
@@ -18,6 +18,8 @@ import PendingPage from './components/PendingPage';
 import ProductDetailPage from './components/ProductDetailPage';
 import MisPedidos from './components/MisPedidos';
 import OrderDetails from "./components/OrderDetails";
+import CircularIndeterminate from "./components/CircularIndeterminate";
+import { formatPrice } from './utils/utils'; 
 
   
 function App() {
@@ -78,6 +80,8 @@ function App() {
     guardarCarritoEnLocalStorage(nuevoCarrito);
   };
 
+  
+
   return (
     <Router>
       <Header carritoAbierto={carritoAbierto} setCarritoAbierto={setCarritoAbierto} carrito={carrito} />
@@ -111,16 +115,16 @@ function App() {
               <div className="text-center">
                 <SliderPrincipal />
                 <h1 className="text-3xl font-bold mb-8">Catálogo de Productos</h1>
-                <p className="border border-gray-300 p-4 mb-6">Estos son los productos disponibles en nuestro supermercado.</p>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {productos.length === 0 ? (
-                    <p>No hay productos disponibles.</p>
+                    <CircularIndeterminate />
                   ) : (
                     productos.map(producto => (
                       <ProductoCard
                         key={producto.id}
                         producto={producto}
                         agregarAlCarrito={agregarAlCarrito}
+                        precioFormateado={formatPrice(producto.precio)}
                       />
                     ))
                   )}

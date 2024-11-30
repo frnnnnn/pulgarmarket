@@ -1,0 +1,45 @@
+/* Barra de Progreso */
+.progress-bar-container {
+  display: flex;
+  align-items: center;
+}
+
+.progress-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.circle {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: gray;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+}
+
+.progress-line {
+  height: 4px;
+  width: 50px;
+  background-color: gray;
+}
+
+.active .circle {
+  background-color: green;
+}
+
+.active .progress-line {
+  background-color: green;
+}
+
+/* Contenedor de GIF */
+.gif-container img {
+  max-width: 100%;
+  height: auto;
+  margin-top: 10px;
+  max-height: 300px;
+}

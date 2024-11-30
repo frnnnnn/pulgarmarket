@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 import pymysql
 pymysql.install_as_MySQLdb()
+from django.conf import settings
+
 
 # Importaciones necesarias
 from datetime import timedelta
@@ -26,8 +28,8 @@ REST_FRAMEWORK = {
 
 # Configuración de JWT (Tokens de autenticación)
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),  # Duración del token
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=7),  # Duración del token
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=30),
     'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': True,
 }
@@ -50,9 +52,9 @@ ALLOWED_HOSTS = []
 
 import os
 
-# Configuración de archivos multimedia
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # Carpeta "media" en el directorio base
+
 
 # Application definition
 
@@ -69,6 +71,7 @@ INSTALLED_APPS = [
     'payments',
     'accounts',
     'orders',
+    'storages',
 ]
 
 MIDDLEWARE = [
@@ -111,16 +114,19 @@ WSGI_APPLICATION = 'supermercado.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'supermercado_p',
-        'USER': 'root',
-        'PASSWORD': 'OvipNctHoFXplXQCqSYdZdiSyRvfhAMz',
-        'HOST': 'autorack.proxy.rlwy.net',
-        'PORT': '37553',
+        'NAME': 'supermercado_pulgar',
+        'USER': 'superpulgar',
+        'PASSWORD': 'nuV9@M@XnFAZJRe',
+        'HOST': 'supermercado-pulgar.mysql.database.azure.com',
+        'PORT': '3306',
+        #disable ssl
         'OPTIONS': {
-            'ssl': None,  # Esto desactiva por completo SSL en la conexión
-        },
+            'ssl':  None,
+    
     }
 }
+}
+
 
 
 

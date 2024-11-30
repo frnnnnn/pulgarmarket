@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './ProductoCard.css';
 import { Link } from 'react-router-dom';
+import { formatPrice } from './utils/utils'; // Importa la función
 
 function ProductoCard({ producto, agregarAlCarrito }) {
   const [cantidad, setCantidad] = useState(1);
@@ -37,7 +38,7 @@ function ProductoCard({ producto, agregarAlCarrito }) {
         />
       </div>
       <div className="text-center mt-4">
-        <p className="text-xl font-semibold text-gray-800">${producto.precio}</p>
+        <p className="text-xl font-semibold text-gray-800">{formatPrice(producto.precio)}</p>
         <p className="text-gray-500 text-xs mt-1">{producto.marca}</p>
         <p className="text-gray-700 font-semibold">{producto.nombre}</p>
       </div>

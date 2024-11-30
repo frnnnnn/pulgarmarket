@@ -65,23 +65,41 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from .models import Order
+import json
+
+# Definimos las fases posibles del pedido
+ORDER_PHASES = ['procesando', 'recogiendo', 'listo', 'entregado']
 
 @api_view(['POST'])
 def verificar_codigo(request):
     try:
+        # Obtener el código de retiro y la fase actual
         pickup_code = request.data.get('pickup_code')
+        phase = request.data.get('phase')  # Recibimos la fase del pedido
         if not pickup_code:
             return Response({"error": "Código de retiro no proporcionado."}, status=400)
+        
+        if phase not in ORDER_PHASES:
+            return Response({"error": "Fase del pedido no válida."}, status=400)
 
-        # Buscar la orden con el código ingresado
+        # Buscar la orden con el código de retiro
         order = Order.objects.get(pickup_code=pickup_code)
 
-        # Marcar como entregada
-        order.status = "entregado"
+        # Verificamos que el pedido no haya sido entregado aún
+        if order.status == "entregado":
+            return Response({"error": "Este pedido ya ha sido entregado."}, status=400)
+        
+        # Actualizamos el estado del pedido con la fase proporcionada
+        order.status = phase
         order.save()
 
-        return Response({"message": "Pedido entregado con éxito.", "order_id": order.id}, status=200)
+        return Response({
+            "message": f"Pedido actualizado a fase {phase}.",
+            "order_id": order.id
+        }, status=200)
+
     except Order.DoesNotExist:
-        return Response({"error": "Pedido no encontrado o ya fue entregado."}, status=404)
+        return Response({"error": "Pedido no encontrado o código incorrecto."}, status=404)
+
     except Exception as e:
         return Response({"error": f"Hubo un problema al verificar el código: {str(e)}"}, status=500)
