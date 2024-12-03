@@ -10,12 +10,12 @@ from rest_framework.response import Response
 
 from accounts.views import perfil
 
-router = DefaultRouter()
-router.register(r'productos', ProductoViewSet)
+#router = DefaultRouter()
+#router.register(r'productos', ProductoViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include(router.urls)),
+    #path('api/', include(router.urls)),
     path('auth/', include('accounts.urls')),  
     path('auth/perfil/', perfil, name='perfil'),
     path('payments/', include('payments.urls')),  # Incluye las URLs de la app `payments`    

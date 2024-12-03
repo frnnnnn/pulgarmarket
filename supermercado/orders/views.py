@@ -36,7 +36,7 @@ from .serializers import OrderSerializer
 @permission_classes([IsAuthenticated])
 def my_orders_view(request):
     try:
-        orders = Order.objects.filter(user=request.user)
+        orders = Order.objects.filter(user=request.user).order_by('-created_at')
         serializer = OrderSerializer(orders, many=True, context={'request': request})  # Ensure request context is passed
         print(serializer.data)  # Debugging to see the output
         return Response(serializer.data)
@@ -58,6 +58,16 @@ def order_detail_view(request, order_id):
     except Exception as e:
         return Response({"error": f"Hubo un problema al obtener el pedido: {str(e)}"}, status=500)
 
+@api_view(['GET'])
+def order_detail_view_admin(request, order_id):
+    try:
+        order = Order.objects.get(id=order_id)
+        serializer = OrderSerializer(order, context={'request': request})
+        return Response(serializer.data)
+    except Order.DoesNotExist:
+        return Response({"error": "Pedido no encontrado"}, status=404)
+    except Exception as e:
+        return Response({"error": f"Hubo un problema al obtener el pedido: {str(e)}"}, status=500)
 
 
 
@@ -103,3 +113,54 @@ def verificar_codigo(request):
 
     except Exception as e:
         return Response({"error": f"Hubo un problema al verificar el código: {str(e)}"}, status=500)
+
+
+from rest_framework.permissions import IsAdminUser
+@api_view(['GET'])
+@permission_classes([IsAdminUser])
+def admin_list_orders(request):
+    """
+    Devuelve todos los pedidos para el administrador.
+    """
+    try:
+        orders = Order.objects.all().order_by('-created_at')
+        serializer = OrderSerializer(orders, many=True, context={'request': request})
+        return Response(serializer.data)
+    except Exception as e:
+        return Response({"error": f"Hubo un problema al obtener los pedidos: {str(e)}"}, status=500)
+
+@api_view(['PATCH'])
+@permission_classes([IsAdminUser])
+def admin_update_order_status(request, order_id):
+    """
+    Actualiza el estado de un pedido.
+    """
+    try:
+        order = Order.objects.get(id=order_id)
+        new_status = request.data.get('status')
+
+        if new_status not in ['procesando', 'preparando', 'listo', 'entregado']:
+            return Response({"error": "Estado no válido"}, status=400)
+
+        order.status = new_status
+        order.save()
+
+        return Response({"message": f"Estado actualizado a {new_status}"}, status=200)
+    except Order.DoesNotExist:
+        return Response({"error": "Pedido no encontrado"}, status=404)
+    except Exception as e:
+        return Response({"error": f"Error al actualizar el pedido: {str(e)}"}, status=500)
+    
+
+
+@api_view(['GET'])
+def all_orders(request):
+    """
+    Devuelve todos los pedidos para el administrador.
+    """
+    try:
+        orders = Order.objects.all().order_by('-created_at')
+        serializer = OrderSerializer(orders, many=True, context={'request': request})
+        return Response(serializer.data)
+    except Exception as e:
+        return Response({"error": f"Hubo un problema al obtener los pedidos: {str(e)}"}, status=500)

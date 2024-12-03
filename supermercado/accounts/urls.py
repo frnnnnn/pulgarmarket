@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import MyTokenObtainPairView, register, perfil, cambiar_contrasena
+from .views import MyTokenObtainPairView, register, perfil, cambiar_contrasena, list_users
 from rest_framework_simplejwt.views import TokenRefreshView
 
 urlpatterns = [
@@ -8,5 +8,6 @@ urlpatterns = [
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),  # Refrescar token JWT
     path('perfil/', perfil, name='perfil'),  # Endpoint protegido
     path('cambiar-contrasena/', cambiar_contrasena, name='cambiar_contrasena'),
+    path('admin/users/', list_users, name='list_users'),
 
 ]

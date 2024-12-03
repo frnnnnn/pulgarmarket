@@ -7,7 +7,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.hashers import make_password
-from .serializers import UserProfileSerializer
+from .serializers import UserProfileSerializer, UserSerializer
 
 # Registro de usuarios
 @api_view(['POST'])
@@ -53,8 +53,13 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     
     def validate(self, attrs):
         data = super().validate(attrs)
+
+        # Agrega información adicional sobre el usuario
         data['username'] = self.user.username
+        data['is_admin'] = self.user.is_staff  # Indica si el usuario es administrador
+
         return data
+
 
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
@@ -84,3 +89,19 @@ def cambiar_contrasena(request):
     user.password = make_password(nueva_contrasena)
     user.save()
     return Response({"success": "La contraseña ha sido actualizada correctamente."}, status=status.HTTP_200_OK)
+
+
+from rest_framework.permissions import IsAdminUser
+
+@api_view(['GET'])
+@permission_classes([IsAdminUser])
+def list_users(request):
+    """
+    Devuelve una lista de usuarios.
+    """
+    try:
+        users = User.objects.all()
+        serializer = UserSerializer(users, many=True)
+        return Response(serializer.data, status=200)
+    except Exception as e:
+        return Response({"error": f"Hubo un problema al obtener los usuarios: {str(e)}"}, status=500)

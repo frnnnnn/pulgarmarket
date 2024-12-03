@@ -48,7 +48,13 @@ SECRET_KEY = 'django-insecure-eqk=up9)jhw&-5ya=mymyy@#6-ntgf$s)dox*a!qww=nzy_znj
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+    }
+}
+
 
 import os
 
@@ -84,7 +90,12 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',  # Asegúrate de que esté aquí
 ]
+CSRF_TRUSTED_ORIGINS = [
+    'https://47bc-2803-c600-e102-9295-2c0d-9823-6582-bc4f.ngrok-free.app',
+]
+
 CORS_ALLOW_ALL_ORIGINS = True
 ROOT_URLCONF = 'supermercado.urls'
 

@@ -7,17 +7,20 @@ function ProductoCard({ producto, agregarAlCarrito }) {
   const [cantidad, setCantidad] = useState(1);
   const [enCarrito, setEnCarrito] = useState(false);
 
-  const handleAgregarAlCarrito = () => {
+  const handleAgregarAlCarrito = (e) => {
+    e.stopPropagation(); // Evita la propagación del evento para que no active la redirección
     agregarAlCarrito(producto, cantidad);
     setEnCarrito(true);
   };
 
-  const handleIncrementarCantidad = () => {
+  const handleIncrementarCantidad = (e) => {
+    e.stopPropagation(); // Evita la redirección
     setCantidad(cantidad + 1);
     agregarAlCarrito(producto, 1);
   };
 
-  const handleDecrementarCantidad = () => {
+  const handleDecrementarCantidad = (e) => {
+    e.stopPropagation(); // Evita la redirección
     if (cantidad > 1) {
       setCantidad(cantidad - 1);
       agregarAlCarrito(producto, -1);
@@ -28,8 +31,10 @@ function ProductoCard({ producto, agregarAlCarrito }) {
   };
 
   return (
-    <div className="producto-card bg-white shadow-lg rounded-lg p-4 flex flex-col items-center">
-      <Link to={`/${producto.slug}`}>
+    <div
+      className="producto-card bg-white shadow-lg rounded-lg p-4 flex flex-col items-center cursor-pointer"
+      onClick={() => window.location.href = `/${producto.slug}`} // Redirige cuando se hace clic en la tarjeta
+    >
       <div className="relative">
         <img
           src={producto.imagen}
@@ -68,7 +73,6 @@ function ProductoCard({ producto, agregarAlCarrito }) {
           </button>
         )}
       </div>
-      </Link>
     </div>
   );
 }
