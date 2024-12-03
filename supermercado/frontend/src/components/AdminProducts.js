@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import SidebarAdmin from './SidebarAdmin'; // Importamos SidebarAdmin
+import SidebarAdmin from './SidebarAdmin';  // Importamos SidebarAdmin
 
 function AdminProducts() {
   const [productos, setProductos] = useState([]);
+  const [categorias, setCategorias] = useState([]);  // Estado para las categorías
   const [error, setError] = useState(null);
   const [productoSeleccionado, setProductoSeleccionado] = useState(null); // Producto seleccionado para eliminar
   const [modalAbierto, setModalAbierto] = useState(false); // Estado del modal para eliminar
@@ -15,7 +16,9 @@ function AdminProducts() {
     imagen: null,
     descripcion: '',
     slug: '',
+    categoria: '',  // Agregamos el campo categoria
   }); // Estado para manejar los datos del formulario
+  const [imagePreview, setImagePreview] = useState(null); // Estado para la previsualización de la imagen
 
   useEffect(() => {
     const fetchProductos = async () => {
@@ -27,7 +30,17 @@ function AdminProducts() {
       }
     };
 
+    const fetchCategorias = async () => {
+      try {
+        const response = await axios.get('http://127.0.0.1:8000/products/categorias/');
+        setCategorias(response.data);
+      } catch (err) {
+        setError('Error al cargar las categorías.');
+      }
+    };
+
     fetchProductos();
+    fetchCategorias();
   }, []);
 
   const generarSlug = (nombre, precio) => {
@@ -46,7 +59,9 @@ function AdminProducts() {
         imagen: null, // No prellenamos imagen, ya que es un archivo
         descripcion: producto.descripcion,
         slug: producto.slug,
+        categoria: producto.categoria.id,  // Prellenamos la categoría seleccionada
       });
+      setImagePreview(producto.imagen ? `http://127.0.0.1:8000${producto.imagen}` : null); // Previsualización existente
       setProductoSeleccionado(producto);
     } else {
       setNuevoProducto({
@@ -56,10 +71,14 @@ function AdminProducts() {
         imagen: null,
         descripcion: '',
         slug: '',
+        categoria: '',  // Dejar vacío inicialmente
       });
+      setImagePreview(null);
       setProductoSeleccionado(null);
     }
     setModalFormulario(true);
+    // Evitar que el fondo se desplace cuando el modal está abierto
+    document.body.style.overflow = 'hidden';
   };
 
   const cerrarFormulario = () => {
@@ -70,23 +89,28 @@ function AdminProducts() {
       imagen: null,
       descripcion: '',
       slug: '',
+      categoria: '',  // Dejar vacío
     });
+    setImagePreview(null);
     setProductoSeleccionado(null);
     setModalFormulario(false);
-  };
-
-  const abrirModalEliminar = (producto) => {
-    setProductoSeleccionado(producto);
-    setModalAbierto(true);
-  };
-
-  const cerrarModalEliminar = () => {
-    setProductoSeleccionado(null);
-    setModalAbierto(false);
+    // Restaurar el desplazamiento del fondo cuando el modal se cierra
+    document.body.style.overflow = 'auto';
   };
 
   const handleFileChange = (e) => {
-    setNuevoProducto({ ...nuevoProducto, imagen: e.target.files[0] });
+    const file = e.target.files[0];
+    setNuevoProducto({ ...nuevoProducto, imagen: file });
+
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setImagePreview(null);
+    }
   };
 
   const handleInputChange = (e) => {
@@ -112,11 +136,7 @@ function AdminProducts() {
     }
     formData.append('descripcion', nuevoProducto.descripcion);
     formData.append('slug', nuevoProducto.slug);
-    if (nuevoProducto.stock > 0) {
-      formData.append('disponible', true);
-    } else {
-      formData.append('disponible', false);
-    }
+    formData.append('categoria', nuevoProducto.categoria);  // Enviar categoría seleccionada
 
     try {
       if (productoSeleccionado) {
@@ -159,30 +179,6 @@ function AdminProducts() {
     }
   };
 
-  const handleConfirmDelete = async () => {
-    if (!productoSeleccionado) return;
-
-    try {
-      await axios.delete(
-        `http://127.0.0.1:8000/products/${productoSeleccionado.slug}/delete/`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('access')}`,
-          },
-        }
-      );
-      alert('Producto eliminado exitosamente');
-      setProductos((prevProductos) =>
-        prevProductos.filter((producto) => producto.slug !== productoSeleccionado.slug)
-      );
-    } catch (error) {
-      console.error('Error al eliminar el producto:', error);
-      alert('No se pudo eliminar el producto');
-    } finally {
-      cerrarModalEliminar();
-    }
-  };
-
   const renderProducts = () => {
     if (productos.length === 0) {
       return <p>No hay productos disponibles.</p>;
@@ -200,12 +196,6 @@ function AdminProducts() {
           <p className="text-gray-600">Descripción: {producto.descripcion}</p>
         </div>
         <div>
-          <button
-            onClick={() => abrirModalEliminar(producto)}
-            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition"
-          >
-            Eliminar
-          </button>
           <button
             onClick={() => abrirFormulario(producto)}
             className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition ml-2"
@@ -233,106 +223,127 @@ function AdminProducts() {
         </button>
         <div className="grid grid-cols-1 gap-4">{renderProducts()}</div>
 
-        {/* Modal de confirmación para eliminar */}
-        {modalAbierto && (
-          <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50">
-            <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
-              <h2 className="text-xl font-bold mb-4">¿Estás seguro?</h2>
-              <p className="text-gray-700 mb-4">
-                Vas a eliminar el producto <strong>{productoSeleccionado?.nombre}</strong>. Esta acción no se puede deshacer.
-              </p>
-              <div className="flex justify-end space-x-4">
-                <button
-                  onClick={cerrarModalEliminar}
-                  className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition"
-                >
-                  Cancelar
-                </button>
-                <button
-                  onClick={handleConfirmDelete}
-                  className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition"
-                >
-                  Eliminar
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
         {/* Modal para formulario */}
         {modalFormulario && (
           <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50">
-            <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+            <div className="bg-white p-6 rounded-lg shadow-lg max-w-3xl w-full max-h-screen overflow-y-auto">
               <h2 className="text-xl font-bold mb-4">
                 {productoSeleccionado ? 'Editar Producto' : 'Agregar Producto'}
               </h2>
               <form onSubmit={handleFormSubmit}>
-                <div className="mb-4">
-                  <label htmlFor="nombre" className="block text-gray-700">Nombre</label>
-                  <input
-                    type="text"
-                    id="nombre"
-                    name="nombre"
-                    value={nuevoProducto.nombre}
-                    onChange={handleInputChange}
-                    className="mt-2 p-2 border border-gray-300 rounded w-full"
-                  />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Primera columna: Campos del formulario */}
+                  <div className="space-y-4">
+                    <div>
+                      <label htmlFor="nombre" className="block text-gray-700">Nombre</label>
+                      <input
+                        type="text"
+                        id="nombre"
+                        name="nombre"
+                        value={nuevoProducto.nombre}
+                        onChange={handleInputChange}
+                        className="mt-2 p-2 border border-gray-300 rounded w-full"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="precio" className="block text-gray-700">Precio</label>
+                      <input
+                        type="number"
+                        id="precio"
+                        name="precio"
+                        value={nuevoProducto.precio}
+                        onChange={handleInputChange}
+                        className="mt-2 p-2 border border-gray-300 rounded w-full"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="stock" className="block text-gray-700">Stock</label>
+                      <input
+                        type="number"
+                        id="stock"
+                        name="stock"
+                        value={nuevoProducto.stock}
+                        onChange={handleInputChange}
+                        className="mt-2 p-2 border border-gray-300 rounded w-full"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="descripcion" className="block text-gray-700">Descripción</label>
+                      <textarea
+                        id="descripcion"
+                        name="descripcion"
+                        value={nuevoProducto.descripcion}
+                        onChange={handleInputChange}
+                        className="mt-2 p-2 border border-gray-300 rounded w-full"
+                        rows="4"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="categoria" className="block text-gray-700">Categoría</label>
+                      <select
+                        id="categoria"
+                        name="categoria"
+                        value={nuevoProducto.categoria}
+                        onChange={handleInputChange}
+                        className="mt-2 p-2 border border-gray-300 rounded w-full"
+                        required
+                      >
+                        <option value={nuevoProducto.categoria}>Selecciona una categoría</option>
+                        {categorias.map(categoria => (
+                          <option key={categoria.id} value={categoria.id}>
+                            {categoria.nombre}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Segunda columna: Subida de imagen y previsualización */}
+                  <div className="space-y-4">
+                    <div>
+                      <label htmlFor="imagen" className="block text-gray-700">Imagen</label>
+                      <input
+                        type="file"
+                        id="imagen"
+                        name="imagen"
+                        accept="image/*"
+                        onChange={handleFileChange}
+                        className="mt-2 p-2 border border-gray-300 rounded w-full"
+                      />
+                    </div>
+                    {imagePreview && (
+                      <div className="mt-4">
+                        <p className="text-gray-700 mb-2">Previsualización de la Imagen:</p>
+                        <img
+                          src={imagePreview}
+                          alt="Previsualización"
+                          className="w-full max-h-64 object-contain rounded"
+                        />
+                      </div>
+                    )}
+                  </div>
                 </div>
-                <div className="mb-4">
-                  <label htmlFor="precio" className="block text-gray-700">Precio</label>
-                  <input
-                    type="number"
-                    id="precio"
-                    name="precio"
-                    value={nuevoProducto.precio}
-                    onChange={handleInputChange}
-                    className="mt-2 p-2 border border-gray-300 rounded w-full"
-                  />
+
+                <div className="flex justify-between mt-6">
+                  <button
+                    type="submit"
+                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
+                  >
+                    {productoSeleccionado ? 'Actualizar Producto' : 'Crear Producto'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={cerrarFormulario}
+                    className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition"
+                  >
+                    Cancelar
+                  </button>
                 </div>
-                <div className="mb-4">
-                  <label htmlFor="stock" className="block text-gray-700">Stock</label>
-                  <input
-                    type="number"
-                    id="stock"
-                    name="stock"
-                    value={nuevoProducto.stock}
-                    onChange={handleInputChange}
-                    className="mt-2 p-2 border border-gray-300 rounded w-full"
-                  />
-                </div>
-                <div className="mb-4">
-                  <label htmlFor="descripcion" className="block text-gray-700">Descripción</label>
-                  <textarea
-                    id="descripcion"
-                    name="descripcion"
-                    value={nuevoProducto.descripcion}
-                    onChange={handleInputChange}
-                    className="mt-2 p-2 border border-gray-300 rounded w-full"
-                  />
-                </div>
-                <div className="mb-4">
-                  <label htmlFor="imagen" className="block text-gray-700">Imagen</label>
-                  <input
-                    type="file"
-                    id="imagen"
-                    name="imagen"
-                    onChange={handleFileChange}
-                    className="mt-2 p-2 border border-gray-300 rounded w-full"
-                  />
-                </div>
-                <button
-                  type="submit"
-                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
-                >
-                  {productoSeleccionado ? 'Actualizar Producto' : 'Crear Producto'}
-                </button>
               </form>
-              <button
-                onClick={cerrarFormulario}
-                className="bg-gray-500 text-white px-4 py-2 rounded mt-4 hover:bg-gray-600 transition"
-              >
-                Cancelar
-              </button>
             </div>
           </div>
         )}

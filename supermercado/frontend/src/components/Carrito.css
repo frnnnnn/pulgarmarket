@@ -1,51 +1,47 @@
 .carrito-drawer {
-    position: fixed;
-    top: 0;
-    right: 0; /* Cambiar de left a right para que aparezca desde la derecha */
-    width: 300px;
-    height: 100%;
-    background-color: #fff;
-    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
-    transform: translateX(100%); /* Cambiar de -100% a 100% para que se oculte a la derecha */
-    transition: transform 0.3s ease-in-out;
-    z-index: 1000;
-    overflow-y: auto;
-  }
-  
-  .carrito-drawer.abierto {
-    transform: translateX(0); /* Moverlo a 0 cuando esté abierto */
-  }
-  
-  .carrito-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem;
-    border-bottom: 1px solid #ddd;
-  }
-  
-  .cerrar-btn {
-    font-size: 1.5rem;
-    background: none;
-    border: none;
-    cursor: pointer;
-  }
-  
-  .carrito-contenido {
-    padding: 1rem;
-  }
-  
-  .carrito-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.5rem 0;
-    border-bottom: 1px solid #eee;
-  }
-  
-  .carrito-total {
-    padding: 1rem;
-    border-top: 1px solid #ddd;
-    font-weight: bold;
-  }
-  
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 350px;
+  max-width: 90%;
+  height: 100%;
+  background-color: #ffffff;
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
+  transform: translateX(100%);
+  transition: transform 0.3s ease-in-out;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+}
+
+.carrito-drawer.abierto {
+  transform: translateX(0);
+}
+
+.carrito-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 900;
+}
+
+/* Scroll personalizado para el contenido del carrito */
+.carrito-contenido::-webkit-scrollbar {
+  width: 8px;
+}
+
+.carrito-contenido::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.carrito-contenido::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+.carrito-contenido::-webkit-scrollbar-thumb:hover {
+  background: #a1a1a1;
+}

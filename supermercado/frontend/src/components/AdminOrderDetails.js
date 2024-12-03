@@ -111,8 +111,8 @@ function AdminOrderDetails() {
               className="p-3 border rounded-md w-full lg:w-1/2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="procesando">Procesando</option>
-              <option value="recogiendo">Recogiendo</option>
-              <option value="listo">Listo</option>
+              <option value="recogiendo">Recogiendo productos</option>
+              <option value="listo">Listo para retiro</option>
               <option value="entregado">Entregado</option>
             </select>
 

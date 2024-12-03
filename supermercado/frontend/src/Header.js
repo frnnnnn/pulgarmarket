@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FiMenu, FiX, FiSearch, FiShoppingCart } from 'react-icons/fi';
-import './Header.css';
 import LoginModal from './components/LoginModal';
 import RegisterModal from './components/RegisterModal';
 
@@ -10,6 +9,7 @@ function Header({ carrito, carritoAbierto, setCarritoAbierto }) {
   const [isLoginOpen, setLoginOpen] = useState(false);
   const [isRegisterOpen, setRegisterOpen] = useState(false);
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const navigate = useNavigate();
 
@@ -28,35 +28,47 @@ function Header({ carrito, carritoAbierto, setCarritoAbierto }) {
   // Calcular el número total de artículos en el carrito
   const totalItems = carrito.reduce((acc, item) => acc + item.cantidad, 0);
 
+  const handleSearch = () => {
+    if (searchQuery.trim()) {
+      navigate(`/productos?query=${searchQuery}`);
+    }
+  };
+
   return (
     <header className="bg-white shadow-md w-full">
       <div className="hidden md:flex container mx-auto max-w-screen-lg justify-between items-center p-4">
+        {/* Logo */}
         <div className="flex items-center">
           <a href="/">
-            <img src={`${process.env.PUBLIC_URL}/logo-header.png`} alt="Logo" className="h-20" />
+            <img src={`${process.env.PUBLIC_URL}/logo-header.png`} alt="Logo" className="h-16" />
           </a>
         </div>
 
-        <div className="flex-grow mx-4">
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="¿Qué estás buscando?"
-              className="barra p-2 border border-gray-300 rounded-full pl-4"
-            />
-            <button className="absolute top-0 right-0 h-full px-4 bg-green-500 rounded-r-full text-white">
-              <FiSearch className="h-5 w-5" />
-            </button>
-          </div>
+        {/* Barra de búsqueda */}
+        <div className="flex-grow mx-4 relative">
+          <input
+            type="text"
+            placeholder="¿Qué estás buscando?"
+            className="w-full p-3 border border-gray-300 rounded-full pl-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          <button
+            className="absolute top-0 right-0 h-full px-4 bg-green-500 text-white rounded-r-full hover:bg-green-600"
+            onClick={handleSearch}
+          >
+            <FiSearch className="h-5 w-5" />
+          </button>
         </div>
 
+        {/* Opciones de Usuario */}
         <div className="flex items-center space-x-4">
           {isAuthenticated ? (
             <>
               <div className="flex items-center space-x-2">
                 <img src={`${process.env.PUBLIC_URL}/svg/account-svgrepo-com.svg`} alt="perfil" className="h-7" />
                 <Link to="/perfil" className="text-gray-700 font-semibold">Mi Perfil</Link>
-                <Link to="/mis-pedidos" className="text-gray-700 font-semibold">Mis Pedidos</Link> {/* Agregado enlace a Mis Pedidos */}
+                <Link to="/mis-pedidos" className="text-gray-700 font-semibold">Mis Pedidos</Link>
               </div>
               <button onClick={handleLogout} className="text-red-500 font-semibold">Cerrar Sesión</button>
             </>
@@ -70,6 +82,8 @@ function Header({ carrito, carritoAbierto, setCarritoAbierto }) {
               </div>
             </>
           )}
+
+          {/* Carrito de compras */}
           <button onClick={() => setCarritoAbierto(!carritoAbierto)} className="relative">
             <FiShoppingCart className="text-2xl" />
             {totalItems > 0 && (
@@ -103,26 +117,33 @@ function Header({ carrito, carritoAbierto, setCarritoAbierto }) {
         </button>
       </div>
 
+      {/* Barra de búsqueda en móvil */}
       <div className="px-4 mb-2 md:hidden">
         <div className="relative w-full">
           <input
             type="text"
             placeholder="¿Qué productos necesitas hoy?"
-            className="w-full p-2 border border-gray-300 rounded-full pl-4"
+            className="w-full p-3 border border-gray-300 rounded-full pl-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
           />
-          <button className="absolute top-0 right-0 h-full px-4 bg-gray-200 rounded-r-full text-gray-600">
+          <button
+            className="absolute top-0 right-0 h-full px-4 bg-gray-200 rounded-r-full text-gray-600"
+            onClick={handleSearch}
+          >
             <FiSearch />
           </button>
         </div>
       </div>
 
+      {/* Menú móvil desplegable */}
       {isMobileMenuOpen && (
         <div className="md:hidden bg-white shadow-md p-4">
           <div className="flex flex-col space-y-4">
             {isAuthenticated ? (
               <>
                 <Link to="/perfil" className="text-gray-700 font-semibold">Mi Perfil</Link>
-                <Link to="/mis-pedidos" className="text-gray-700 font-semibold">Mis Pedidos</Link> {/* Agregado enlace a Mis Pedidos en móvil */}
+                <Link to="/mis-pedidos" className="text-gray-700 font-semibold">Mis Pedidos</Link>
                 <button onClick={handleLogout} className="text-red-500 font-semibold">Cerrar Sesión</button>
               </>
             ) : (
@@ -134,6 +155,7 @@ function Header({ carrito, carritoAbierto, setCarritoAbierto }) {
         </div>
       )}
 
+      {/* Modales de Login y Registro */}
       <LoginModal isOpen={isLoginOpen} onClose={() => setLoginOpen(false)} setIsAuthenticated={setIsAuthenticated} />
       <RegisterModal isOpen={isRegisterOpen} onClose={() => setRegisterOpen(false)} setIsAuthenticated={setIsAuthenticated} />
     </header>

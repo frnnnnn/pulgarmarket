@@ -1,38 +1,40 @@
+/* Carrito.css */
+
+/* Estilos para el botón "Seleccionar Todos" */
 .seleccionar-todos-btn {
-  background: none;
-  border: none;
-  color: #3b82f6; /* Color azul sutil */
-  cursor: pointer;
-  font-size: 0.9rem;
-  text-decoration: underline;
-  padding: 0;
-  margin-bottom: 8px;
+  @apply bg-transparent border border-blue-500 text-blue-500 py-2 px-4 rounded-md hover:bg-blue-500 hover:text-white transition;
 }
 
 .seleccionar-todos-btn:hover {
-  text-decoration: none;
-  color: #2563eb; /* Azul más oscuro al pasar el mouse */
+  /* Tailwind CSS ya maneja las transiciones con @apply */
 }
 
+/* Contenedor Detalle del Carrito */
 .carrito-detalle-container {
-  max-width: 800px;
-  margin: auto;
-  padding: 20px;
+  @apply max-w-4xl mx-auto p-6;
 }
 
+/* Item Detalle del Carrito */
 .carrito-detalle-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 0;
+  @apply flex items-center justify-between p-4 border-b;
 }
 
+/* Resumen del Carrito */
 .carrito-detalle-resumen {
-  border-top: 1px solid #ddd;
-  padding-top: 20px;
+  @apply border-t pt-4;
 }
 
+/* Botones deshabilitados */
 button[disabled] {
-  opacity: 0.5;
-  cursor: not-allowed;
+  @apply opacity-50 cursor-not-allowed;
+}
+
+/* Loader Spinner */
+.loader {
+  border-top-color: #3498db;
+  animation: spinner 1.5s linear infinite;
+}
+
+@keyframes spinner {
+  to { transform: rotate(360deg); }
 }

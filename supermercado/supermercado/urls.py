@@ -10,9 +10,6 @@ from rest_framework.response import Response
 
 from accounts.views import perfil
 
-#router = DefaultRouter()
-#router.register(r'productos', ProductoViewSet)
-
 urlpatterns = [
     path('admin/', admin.site.urls),
     #path('api/', include(router.urls)),

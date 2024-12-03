@@ -81,7 +81,7 @@ function MisPedidos() {
           </span>
         </p>
         <p className="order-total text-lg font-semibold mb-4">
-          Total: ${parseFloat(order.total).toFixed(2)}
+          Total: ${parseFloat(order.total).toFixed(0)}
         </p>
         <h3 className="order-items-header text-lg font-bold mb-3">
           Productos:
@@ -108,7 +108,7 @@ function MisPedidos() {
                 </div>
               </div>
               <p className="item-price text-gray-800 font-semibold">
-                ${parseFloat(item.price).toFixed(2)}
+                ${parseFloat(item.price).toFixed(0)}
               </p>
             </li>
           ))}

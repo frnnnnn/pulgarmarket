@@ -93,7 +93,8 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',  # Asegúrate de que esté aquí
 ]
 CSRF_TRUSTED_ORIGINS = [
-    'https://47bc-2803-c600-e102-9295-2c0d-9823-6582-bc4f.ngrok-free.app',
+    'https://a68d-191-114-91-238.ngrok-free.app',
+    'https://*.ngrok-free.app',
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True

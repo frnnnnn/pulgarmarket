@@ -146,7 +146,7 @@ function CarritoDetalle({ carrito, actualizarCantidad, eliminarDelCarrito }) {
           Total Seleccionado: ${carrito
             .filter(item => productosSeleccionados.includes(item.producto.id))
             .reduce((total, item) => total + item.producto.precio * item.cantidad, 0)
-            .toFixed(2)}
+            .toFixed(0)}
         </p>
         {error && <p className="text-red-500">{error}</p>}
         {isProcessing ? (

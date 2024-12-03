@@ -71,7 +71,7 @@ function SuccessPage() {
 
           {orderDetails?.pickup_code && (
             <div className="pickup-code bg-blue-100 text-blue-800 font-bold text-2xl p-4 rounded-lg mt-6">
-              Código: {orderDetails.pickup_code}
+              Código de retiro: {orderDetails.pickup_code}
             </div>
           )}
         </div>

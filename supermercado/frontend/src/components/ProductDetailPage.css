@@ -1,21 +1,15 @@
+/* Loader Spinner */
+.loader {
+  border-top-color: #3498db;
+  animation: spinner 1.5s linear infinite;
+}
+
+@keyframes spinner {
+  to { transform: rotate(360deg); }
+}
+
+/* Estilos personalizados (si es necesario) */
 .product-detail {
-    font-family: Arial, sans-serif;
-  }
-  
-  .product-image img {
-    max-width: 300px;
-  }
-  
-  .product-info {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .add-to-cart-btn {
-    width: 100%;
-    max-width: 200px;
-    text-align: center;
-    font-size: 1rem;
-    font-weight: bold;
-  }
-  
+  font-family: Arial, sans-serif;
+
+}
